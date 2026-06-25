@@ -49,8 +49,9 @@ welth/
 ## Quick Start (Local Services via Docker)
 
 1. **Clone and Configure**:
-   Copy `.env.example` to `.env`:
    ```bash
+   git clone https://github.com/MUNNA374/Welth.git
+   cd Welth
    cp .env.example .env
    ```
    Add your `GEMINI_API_KEY` into `.env`.
