@@ -95,42 +95,44 @@ export default function InvestmentsPage() {
             <Briefcase size={18} className="text-emerald-400" />
             <span>Holdings</span>
           </div>
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-slate-900 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                <th className="px-6 py-4">Asset</th>
-                <th className="px-6 py-4">Shares</th>
-                <th className="px-6 py-4">Avg Buy</th>
-                <th className="px-6 py-4">Current</th>
-                <th className="px-6 py-4 text-right">Value</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-900 text-sm">
-              {investments.map((inv) => {
-                const value = inv.shares * inv.currentPrice;
-                const gain = value - (inv.shares * inv.buyPrice);
-                return (
-                  <tr key={inv.id} className="hover:bg-slate-900/20 transition-colors">
-                    <td className="px-6 py-4">
-                      <div>
-                        <span className="font-extrabold text-white block">{inv.symbol}</span>
-                        <span className="text-slate-500 text-xs">{inv.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-slate-300 font-medium">{inv.shares}</td>
-                    <td className="px-6 py-4 text-slate-400">${inv.buyPrice.toFixed(2)}</td>
-                    <td className="px-6 py-4 text-slate-300">${inv.currentPrice.toFixed(2)}</td>
-                    <td className="px-6 py-4 text-right">
-                      <span className="font-bold text-white block">${value.toFixed(2)}</span>
-                      <span className={`text-[10px] font-bold ${gain >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                        {gain >= 0 ? '+' : ''}{((gain / (inv.shares * inv.buyPrice)) * 100).toFixed(2)}%
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[600px]">
+              <thead>
+                <tr className="border-b border-slate-900 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-6 py-4">Asset</th>
+                  <th className="px-6 py-4">Shares</th>
+                  <th className="px-6 py-4">Avg Buy</th>
+                  <th className="px-6 py-4">Current</th>
+                  <th className="px-6 py-4 text-right">Value</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-900 text-sm">
+                {investments.map((inv) => {
+                  const value = inv.shares * inv.currentPrice;
+                  const gain = value - (inv.shares * inv.buyPrice);
+                  return (
+                    <tr key={inv.id} className="hover:bg-slate-900/20 transition-colors">
+                      <td className="px-6 py-4">
+                        <div>
+                          <span className="font-extrabold text-white block">{inv.symbol}</span>
+                          <span className="text-slate-500 text-xs">{inv.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-slate-300 font-medium">{inv.shares}</td>
+                      <td className="px-6 py-4 text-slate-400">${inv.buyPrice.toFixed(2)}</td>
+                      <td className="px-6 py-4 text-slate-300">${inv.currentPrice.toFixed(2)}</td>
+                      <td className="px-6 py-4 text-right">
+                        <span className="font-bold text-white block">${value.toFixed(2)}</span>
+                        <span className={`text-[10px] font-bold ${gain >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                          {gain >= 0 ? '+' : ''}{((gain / (inv.shares * inv.buyPrice)) * 100).toFixed(2)}%
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* WATCHLIST */}

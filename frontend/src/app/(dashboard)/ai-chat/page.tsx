@@ -65,7 +65,7 @@ export default function AIChatPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-140px)] flex flex-col gap-6">
+    <div className="h-[calc(100vh-180px)] md:h-[calc(100vh-140px)] flex flex-col gap-6">
       {/* HEADER */}
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 bg-gradient-to-tr from-emerald-400 to-indigo-500 rounded-xl flex items-center justify-center text-white">

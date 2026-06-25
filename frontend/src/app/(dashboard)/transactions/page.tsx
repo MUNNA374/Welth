@@ -122,22 +122,22 @@ export default function TransactionsPage() {
   return (
     <div className="flex flex-col gap-8 pb-10">
       {/* HEADER */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-white">Transactions</h1>
           <p className="text-slate-400">Track and categorize your incomes and outflows.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
           <button 
             onClick={() => { setShowScanner(true); setShowAddForm(false); }}
-            className="flex items-center gap-2 px-5 py-3 bg-slate-900 border border-slate-800 text-slate-200 font-bold rounded-xl hover:bg-slate-900/60 active:scale-95 transition-all duration-300"
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-slate-900 border border-slate-800 text-slate-200 font-bold rounded-xl hover:bg-slate-900/60 active:scale-95 transition-all duration-300 w-full sm:w-auto"
           >
             <Camera size={18} />
             <span>Scan Receipt</span>
           </button>
           <button 
             onClick={() => { setShowAddForm(true); setShowScanner(false); }}
-            className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl hover:brightness-110 active:scale-95 transition-all duration-300"
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl hover:brightness-110 active:scale-95 transition-all duration-300 w-full sm:w-auto"
           >
             <Plus size={18} />
             <span>Add Transaction</span>
@@ -152,7 +152,7 @@ export default function TransactionsPage() {
             <span className="font-bold text-white text-lg">AI Receipt Scanner (OCR)</span>
             <button onClick={() => setShowScanner(false)} className="text-slate-500 hover:text-slate-300 text-sm">Cancel</button>
           </div>
-          <div className="border border-dashed border-slate-800 bg-slate-900/20 rounded-2xl p-10 flex flex-col items-center gap-4 text-center">
+          <div className="border border-dashed border-slate-800 bg-slate-900/20 rounded-2xl p-6 sm:p-10 flex flex-col items-center gap-4 text-center">
             <Camera size={40} className="text-emerald-400" />
             <div>
               <p className="text-sm font-semibold text-white">Upload receipt snapshot</p>
@@ -252,9 +252,9 @@ export default function TransactionsPage() {
 
       {/* TRANSACTIONS LIST */}
       <div className="glass-card rounded-3xl overflow-hidden">
-        <div className="p-6 border-b border-slate-900 flex items-center justify-between">
+        <div className="p-6 border-b border-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <span className="font-bold text-white text-lg">Transaction History</span>
-          <div className="relative w-72">
+          <div className="relative w-full sm:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
             <input 
               type="text" 

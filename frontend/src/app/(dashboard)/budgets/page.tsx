@@ -85,14 +85,14 @@ export default function BudgetsPage() {
   return (
     <div className="flex flex-col gap-8 pb-10">
       {/* HEADER */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-white">Budgets</h1>
           <p className="text-slate-400">Manage and optimize limits for your core spending groups.</p>
         </div>
         <button 
           onClick={() => setShowAddForm(true)}
-          className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl hover:brightness-110 active:scale-95 transition-all duration-300"
+          className="flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl hover:brightness-110 active:scale-95 transition-all duration-300 w-full sm:w-auto"
         >
           <Plus size={18} />
           <span>New Budget Limit</span>
@@ -157,7 +157,7 @@ export default function BudgetsPage() {
           </div>
           <button 
             type="submit" 
-            className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl self-start active:scale-95 transition-all duration-300"
+            className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl self-start active:scale-95 transition-all duration-300 w-full sm:w-auto flex items-center justify-center"
           >
             Create Limit
           </button>
@@ -209,7 +209,7 @@ export default function BudgetsPage() {
       </div>
 
       {/* AI RECOMMENDATION BOX */}
-      <div className="glass-card p-8 rounded-3xl border border-emerald-500/10 flex flex-col md:flex-row gap-6 items-start">
+      <div className="glass-card p-6 sm:p-8 rounded-3xl border border-emerald-500/10 flex flex-col md:flex-row gap-6 items-start">
         <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-bold text-xl shrink-0">💡</div>
         <div className="flex flex-col gap-2">
           <h3 className="text-lg font-bold text-white flex items-center gap-2">

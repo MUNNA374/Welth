@@ -70,12 +70,12 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8 pb-10">
       {/* HEADER */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-white">Hello, {profile?.firstName || 'User'}</h1>
           <p className="text-slate-400">Here's your smart financial health snapshot.</p>
         </div>
-        <div className="glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-2 border border-emerald-500/10">
+        <div className="glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-2 border border-emerald-500/10 self-start sm:self-auto">
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-ping" />
           <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Sync Live</span>
         </div>
