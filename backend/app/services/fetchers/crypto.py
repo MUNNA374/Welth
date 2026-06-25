@@ -1,5 +1,8 @@
+import logging
 from typing import Dict, Any
 from backend.app.services.fetchers.base import BaseFetcher
+
+logger = logging.getLogger("welth.fetchers.crypto")
 
 class CryptoFetcher(BaseFetcher):
     def __init__(self):
@@ -14,7 +17,38 @@ class CryptoFetcher(BaseFetcher):
         }
 
     async def get_crypto_prices(self) -> Dict[str, Any]:
-        return await self.fetch(
-            url="https://api.mockfinance.com/v1/crypto",
-            fallback_handler=self._fallback
-        )
+        """Fetch current crypto prices from CoinGecko simple price API."""
+        try:
+            url = "https://api.coingecko.com/api/v3/simple/price"
+            params = {
+                "ids": "bitcoin,ethereum,solana,cardano",
+                "vs_currencies": "usd",
+                "include_24hr_change": "true"
+            }
+            res = await self.fetch(url, params=params)
+            
+            return {
+                "BTC": {
+                    "price": float(res.get("bitcoin", {}).get("usd", 67250.00)),
+                    "change": float(res.get("bitcoin", {}).get("usd_24h_change", 0.0)),
+                    "currency": "USD"
+                },
+                "ETH": {
+                    "price": float(res.get("ethereum", {}).get("usd", 3520.50)),
+                    "change": float(res.get("ethereum", {}).get("usd_24h_change", 0.0)),
+                    "currency": "USD"
+                },
+                "SOL": {
+                    "price": float(res.get("solana", {}).get("usd", 142.80)),
+                    "change": float(res.get("solana", {}).get("usd_24h_change", 0.0)),
+                    "currency": "USD"
+                },
+                "ADA": {
+                    "price": float(res.get("cardano", {}).get("usd", 0.48)),
+                    "change": float(res.get("cardano", {}).get("usd_24h_change", 0.0)),
+                    "currency": "USD"
+                }
+            }
+        except Exception as e:
+            logger.warning(f"CoinGecko API fetch failed, using fallback: {e}")
+            return self._fallback()

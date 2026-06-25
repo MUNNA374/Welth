@@ -1,5 +1,8 @@
+import logging
 from typing import Dict, Any
 from backend.app.services.fetchers.base import BaseFetcher
+
+logger = logging.getLogger("welth.fetchers.stocks")
 
 class StockFetcher(BaseFetcher):
     def __init__(self):
@@ -15,9 +18,26 @@ class StockFetcher(BaseFetcher):
         }
 
     async def get_stock_prices(self) -> Dict[str, Any]:
-        """Fetch current stock prices."""
-        # Using a mock API endpoint, with fallback fallback handler
-        return await self.fetch(
-            url="https://api.mockfinance.com/v1/stocks",
-            fallback_handler=self._fallback
-        )
+        """Fetch current stock prices from Yahoo Finance API with fallback."""
+        try:
+            url = "https://query1.finance.yahoo.com/v7/finance/quote"
+            params = {"symbols": "AAPL,MSFT,GOOGL,TSLA,VOO"}
+            
+            res = await self.fetch(url, params=params)
+            result_list = res.get("quoteResponse", {}).get("result", [])
+            
+            mapped = {}
+            for item in result_list:
+                sym = item.get("symbol")
+                mapped[sym] = {
+                    "price": float(item.get("regularMarketPrice", 0.0)),
+                    "change": float(item.get("regularMarketChangePercent", 0.0)),
+                    "currency": item.get("currency", "USD")
+                }
+            
+            if all(k in mapped for k in ["AAPL", "MSFT", "GOOGL", "TSLA"]):
+                return mapped
+            return self._fallback()
+        except Exception as e:
+            logger.warning(f"Yahoo Finance Quote API fetch failed, using fallback: {e}")
+            return self._fallback()

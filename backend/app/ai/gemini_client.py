@@ -106,6 +106,33 @@ class GeminiClient:
             "confidence": 0.85
         }
 
+    async def parse_receipt_ocr_vision(self, file_bytes: bytes, mime_type: str) -> Dict[str, Any]:
+        """Parse receipt image bytes directly using Gemini Vision."""
+        if not gemini_ready:
+            return self.parse_receipt_ocr("Offline fallback")
+
+        template = load_prompt_template("receipt.md")
+        prompt = f"{template}\n\nAnalyze this receipt image and extract structured details."
+
+        try:
+            image_part = {
+                'mime_type': mime_type,
+                'data': file_bytes
+            }
+            import asyncio
+            loop = asyncio.get_event_loop()
+            response = await loop.run_in_executor(
+                None,
+                lambda: model.generate_content([image_part, prompt])
+            )
+            if response and response.text:
+                cleaned = clean_json_response(response.text)
+                return json.loads(cleaned)
+        except Exception as e:
+            logger.error(f"Gemini Vision API call failed: {e}")
+
+        return self.parse_receipt_ocr("Vision API call failed")
+
     async def get_financial_advice(self, query: str, context: str) -> Dict[str, Any]:
         """Query AI financial advisor with custom user context."""
         template = load_prompt_template("advisor.md")

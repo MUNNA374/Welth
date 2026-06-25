@@ -7,11 +7,47 @@ class AIService:
         self.gemini = GeminiClient()
 
     async def get_financial_advice(self, user_id: str, query: str) -> Dict[str, Any]:
-        # Gather user networth and budget context
+        # 1. Gather Accounts
         accounts = await db.account.find_many(where={"userId": user_id})
         balances_sum = sum(acc.balance for acc in accounts)
-        context = f"User has {len(accounts)} accounts with total assets of {balances_sum} USD."
-        
+        accounts_text = "\n".join([f"- {acc.name} ({acc.type}): ${acc.balance:,.2f}" for acc in accounts])
+
+        # 2. Gather active Budgets
+        budgets = await db.budget.find_many(where={"userId": user_id})
+        budgets_text = "\n".join([f"- {b.category}: Limit ${b.amount:,.2f}" for b in budgets])
+
+        # 3. Gather active Goals
+        goals = await db.goal.find_many(where={"userId": user_id})
+        goals_text = "\n".join([f"- {g.name}: Target ${g.targetAmount:,.2f}, Saved ${g.currentAmount:,.2f} ({g.status})" for g in goals])
+
+        # 4. Gather recent transactions
+        transactions = await db.transaction.find_many(
+            where={"userId": user_id},
+            order={"date": "desc"},
+            take=15
+        )
+        tx_text = "\n".join([
+            f"- {tx.date.date() if tx.date else 'Unknown Date'}: {tx.description} | {tx.category} | {'+' if tx.type == 'INFLOW' else '-'}${tx.amount:,.2f}"
+            for tx in transactions
+        ])
+
+        # Combine into rich profile context
+        context = f"""
+=== USER FINANCIAL PROFILE ===
+Total Assets Net Worth: ${balances_sum:,.2f}
+
+ACCOUNTS:
+{accounts_text if accounts_text else 'No active accounts.'}
+
+ACTIVE BUDGETS:
+{budgets_text if budgets_text else 'No active budgets defined.'}
+
+SAVINGS GOALS:
+{goals_text if goals_text else 'No active savings goals.'}
+
+RECENT TRANSACTION HISTORY (Last 15):
+{tx_text if tx_text else 'No recent transactions.'}
+"""
         response = await self.gemini.get_financial_advice(query, context)
         
         # Save to AI History log

@@ -35,11 +35,14 @@ async def get_cashflow(current_user: Any = Depends(get_current_user)):
 
 @router.post("/upload-receipt")
 async def upload_receipt(file: UploadFile = File(...), current_user: Any = Depends(get_current_user)):
+    file_bytes = await file.read()
+    await file.seek(0)
     file_url = await save_upload_file(file)
     # Parse OCR using AI
     from backend.app.ai.gemini_client import GeminiClient
     ai = GeminiClient()
-    ocr_result = await ai.parse_receipt_ocr(f"Receipt image upload: {file_url}")
+    mime_type = file.content_type or "image/jpeg"
+    ocr_result = await ai.parse_receipt_ocr_vision(file_bytes, mime_type)
     
     # Save the receipt log to the database
     from backend.app.core.db import db
