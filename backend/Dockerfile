@@ -14,10 +14,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend source
-COPY . .
+COPY . ./backend
 
 # Compile Prisma client bindings inside container context
-RUN prisma generate --schema=prisma/schema.prisma
+RUN prisma generate --schema=backend/prisma/schema.prisma
 
 EXPOSE 8000
 
