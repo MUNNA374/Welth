@@ -1,0 +1,26 @@
+name: Production Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    # Deploy to Railway CLI or Render webhook mock
+    - name: Deploy Backend to Railway
+      run: |
+        echo "Deploying backend service..."
+        # railway up --service welth-backend
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    # Deploy Next.js to Vercel CLI
+    - name: Deploy Frontend to Vercel
+      run: |
+        echo "Deploying frontend service..."
+        # vercel --token \${{ secrets.VERCEL_TOKEN }} --prod
