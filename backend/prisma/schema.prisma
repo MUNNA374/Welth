@@ -1,0 +1,319 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider  = "prisma-client-py"
+  interface = "async"
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  firstName     String?
+  lastName      String?
+  role          String         @default("USER") // USER, ADMIN
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  accounts      Account[]
+  transactions  Transaction[]
+  budgets       Budget[]
+  goals         Goal[]
+  loans         Loan[]
+  insurances    Insurance[]
+  bills         Bill[]
+  subscriptions Subscription[]
+  receipts      Receipt[]
+  reports       Report[]
+  notifications Notification[]
+  aiHistories   AIHistory[]
+  auditLogs     AuditLog[]
+  sessions      Session[]
+  settings      Settings?
+
+  @@index([email])
+}
+
+model Account {
+  id           String        @id @default(uuid())
+  userId       String
+  name         String
+  type         String        // BANK, INVESTMENT, CREDIT, CASH
+  balance      Float         @default(0.0)
+  currency     String        @default("USD")
+  institution  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  investments  Investment[]
+
+  @@index([userId])
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  accountId   String
+  amount      Float
+  currency    String   @default("USD")
+  category    String   // FOOD, RENT, UTILITIES, SALARY, INVESTMENT, TRAVEL, ENTERTAINMENT, OTHER
+  description String?
+  date        DateTime @default(now())
+  type        String   // INFLOW, OUTFLOW
+  status      String   @default("COMPLETED") // PENDING, COMPLETED, FAILED
+  isFraud     Boolean  @default(false)
+  source      String   @default("MANUAL") // MANUAL, SMS, EMAIL, OCR
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([accountId])
+  @@index([category])
+  @@index([date])
+}
+
+model Budget {
+  id        String   @id @default(uuid())
+  userId    String
+  category  String
+  amount    Float
+  period    String   @default("MONTHLY") // MONTHLY, YEARLY
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([category])
+}
+
+model Goal {
+  id            String    @id @default(uuid())
+  userId        String
+  name          String
+  targetAmount  Float
+  currentAmount Float     @default(0.0)
+  deadline      DateTime?
+  status        String    @default("ACTIVE") // ACTIVE, COMPLETED, ABANDONED
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  savings       Savings[]
+
+  @@index([userId])
+}
+
+model Savings {
+  id        String   @id @default(uuid())
+  goalId    String
+  amount    Float
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  goal      Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@index([goalId])
+}
+
+model Investment {
+  id           String   @id @default(uuid())
+  accountId    String
+  symbol       String
+  name         String
+  type         String   // STOCK, CRYPTO, MUTUAL_FUND, GOLD
+  shares       Float
+  buyPrice     Float
+  currentPrice Float
+  currency     String   @default("USD")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  account      Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([symbol])
+}
+
+model Loan {
+  id                 String   @id @default(uuid())
+  userId             String
+  name               String
+  type               String   // HOME, AUTO, PERSONAL, STUDENT
+  principalAmount    Float
+  interestRate       Float
+  termMonths         Int
+  startDate          DateTime
+  outstandingBalance Float
+  monthlyPayment     Float
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Insurance {
+  id               String   @id @default(uuid())
+  userId           String
+  provider         String
+  policyName       String
+  policyNumber     String
+  type             String   // HEALTH, LIFE, AUTO, HOME
+  premiumAmount    Float
+  premiumFrequency String   @default("MONTHLY") // MONTHLY, ANNUALLY
+  coverageAmount   Float
+  startDate        DateTime
+  expiryDate       DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Bill {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  amount    Float
+  dueDate   DateTime
+  status    String   @default("UNPAID") // PAID, UNPAID
+  category  String
+  recurrence String  @default("MONTHLY") // ONCE, MONTHLY, ANNUALLY
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([dueDate])
+}
+
+model Subscription {
+  id              String    @id @default(uuid())
+  userId          String
+  name            String
+  cost            Float
+  billingCycle    String    @default("MONTHLY") // MONTHLY, ANNUALLY
+  nextBillingDate DateTime
+  category        String
+  status          String    @default("ACTIVE") // ACTIVE, CANCELLED
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Receipt {
+  id             String   @id @default(uuid())
+  userId         String
+  fileName       String
+  filePath       String
+  rawText        String?
+  parsedAmount   Float?
+  parsedMerchant String?
+  parsedDate     DateTime?
+  status         String   @default("PENDING") // PENDING, PROCESSED, FAILED
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Report {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String   // MONTHLY, ANNUAL, AI_ADVICE
+  title       String
+  contentJson String   // JSON payload details
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("GENERAL") // ALERT, RECOMMENDATION, GENERAL
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+model AIHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  prompt    String
+  response  String
+  type      String   @default("CHAT") // CHAT, ADVICE, OCR
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  ipAddress String?
+  userAgent String?
+  details   String?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+}
+
+model Settings {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  theme              String   @default("DARK") // LIGHT, DARK
+  currency           String   @default("USD")
+  emailNotifications Boolean  @default(true)
+  smsNotifications   Boolean  @default(false)
+  pushNotifications  Boolean  @default(true)
+  updatedAt          DateTime @updatedAt
+
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
